@@ -9,6 +9,7 @@ def print_star_str(end: bool = False):
 
 FILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'phone_book.json')
 
+
 def write_file(data: dict, file_name: str = FILE_PATH) -> None:
     """
     Запись в файл
@@ -17,7 +18,7 @@ def write_file(data: dict, file_name: str = FILE_PATH) -> None:
     :param file_name: Наименование файла для записи
     """
     with open(file=file_name, mode='w', encoding='utf-8') as file:
-        json.dump(data, file, indent=4)
+        json.dump(data, file, ensure_ascii=False, indent=4)
     global FILE_DATA
     FILE_DATA = read_file(file_name)
 
@@ -55,7 +56,7 @@ def print_items(items: list[dict] | None = None) -> None:
         print('Файл пустой')
     else:
         for item in items if items else FILE_DATA:
-            print(item, end='\n')
+            print(f'Имя: {item["name"]}, телефон: {item["phone"]}, комментарий: {item["comment"]}')
 
 
 def add_item(data: dict) -> dict:
@@ -113,40 +114,28 @@ def find_item(request_data: str, search_field: str = '*') -> list[dict]:
     ('0' - поиск по id, '1' - поиск по name, '2' - поиск по phone, '3' - поиск по comment)
     :return: Список найденных элементов по поисковой строке
     """
-    print_star_str()
 
     global FILE_DATA
-    match search_field:
-        case '0':
-            items = list(filter(lambda x: str(request_data) == str(x['id']), FILE_DATA))
-        case '1':
-            items = list(filter(lambda x: request_data.lower() in x['name'].lower(), FILE_DATA))
-        case '2':
-            items = list(filter(lambda x: request_data in x['phone'], FILE_DATA))
-        case '3':
-            items = list(filter(lambda x: request_data.lower() in x['comment'].lower(), FILE_DATA))
-        case '*':
-            items = list(
-                filter(
-                    lambda x:
-                    str(request_data) == str(x['id']) or str(request_data).lower() in x['name'].lower() or
-                    str(request_data) in x['phone'] or str(request_data).lower() in x['comment'].lower(),
-                    FILE_DATA
-                )
+    if search_field == '1':
+        items = list(filter(lambda x: request_data.lower() in x['name'].lower(), FILE_DATA))
+    elif search_field == '2':
+        items = list(filter(lambda x: request_data in x['phone'], FILE_DATA))
+    elif search_field == '3':
+        items = list(filter(lambda x: request_data.lower() in x['comment'].lower(), FILE_DATA))
+    else:
+        if search_field != '*':
+            print('\nВы ввели неверный вариант, поиск данных будет произведен по всем полям')
+        items = list(
+            filter(
+                lambda x:
+                str(request_data).lower() in x['name'].lower() or
+                str(request_data) in x['phone'] or
+                str(request_data).lower() in x['comment'].lower(),
+                FILE_DATA
             )
-        case _:
-            print('Вы ввели неверный вариант, поиск данных не будет произведен')
-            return []
+        )
     return items
 
-
-def optimize_id() -> None:
-    """Оптимизация id записей в справочнике"""
-
-    global FILE_DATA
-    for i in range(len(FILE_DATA)):
-        FILE_DATA[i]['id'] = i + 1
-    write_file(FILE_DATA)
 
 def generate_id() -> int:
     """

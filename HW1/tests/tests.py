@@ -32,7 +32,7 @@ class TestSearch:
 class TestDelete:
     def test_delete(self, add_note_without_deleting):
         delete_item(add_note_without_deleting)
-        items = find_item(request_data=add_note_without_deleting['id'], search_field='0')
+        items = find_item(request_data=add_note_without_deleting['name'])
         assert not items, 'Данные не были удалены'
 
 
