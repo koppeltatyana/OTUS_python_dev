@@ -1,1 +1,1 @@
-# OTUS
+# OTUS Python Dev Course
