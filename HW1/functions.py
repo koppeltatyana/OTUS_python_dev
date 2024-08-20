@@ -1,5 +1,6 @@
 import json
 import os.path
+import re
 from json import JSONDecodeError
 
 
@@ -135,6 +136,17 @@ def find_item(request_data: str, search_field: str = '*') -> list[dict]:
             )
         )
     return items
+
+
+def check_number(number: str) -> bool:
+    """
+    Проверить телефон на валидность
+
+    :param number:
+    :return: Булево значение
+    """
+    pattern = r'^[\d\s\.\-()]+$'
+    return bool(re.match(pattern, number))
 
 
 def generate_id() -> int:
