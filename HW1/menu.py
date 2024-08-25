@@ -1,4 +1,4 @@
-from HW1.functions import add_item, check_number, edit_item, find_item, delete_item, print_items, print_star_str
+from functions import add_item, check_number, edit_item, find_item, delete_item, print_items, print_star_str
 
 
 def answers_for_search() -> (str, str):

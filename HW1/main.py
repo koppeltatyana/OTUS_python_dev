@@ -1,4 +1,4 @@
-from HW1.menu import start_menu
+from menu import start_menu
 
 
 if __name__ == '__main__':
