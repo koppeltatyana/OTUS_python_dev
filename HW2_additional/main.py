@@ -32,12 +32,12 @@ def json_decorator(file_name: str):
 
 
 @json_decorator(file_name='file_name.json')
-def custom_sum(*args):
+def custom_sum(*args: int):
     return reduce(lambda x, y: x + y, args)
 
 
 @json_decorator(file_name='file_name.json')
-def custom_sum_with_kwargs(**kwargs):
+def custom_sum_with_kwargs(**kwargs: dict[int]):
     return reduce(lambda x, y: x + y, kwargs.values())
 
 
