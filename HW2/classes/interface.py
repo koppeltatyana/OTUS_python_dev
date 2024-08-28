@@ -1,4 +1,7 @@
-from HW2 import Contact, PhoneBook
+import re
+
+from .contact import Contact
+from .phone_book import PhoneBook
 
 
 class Interface:
@@ -29,12 +32,28 @@ class Interface:
         print('Телефонный справочник начал свою работу\n')
 
     @staticmethod
+    def check_number(number: str) -> bool:
+        """
+        Проверить телефон на валидность
+
+        :param number: Проверяемый номер телефона
+        :return: Булево значение
+        """
+        return bool(re.match(r'^[\d\s\.\-() ]+$', number))
+
     def input_contact_data(
-            name_prefix: str = 'Введите ФИО нового контакта: ',
-            phone_prefix: str = 'Введите телефон нового контакта: ',
-            comment_prefix: str = 'Введите комментарий для нового контакта: ',
+        self,
+        name_prefix: str = 'Введите ФИО нового контакта: ',
+        phone_prefix: str = 'Введите телефон нового контакта: ',
+        comment_prefix: str = 'Введите комментарий для нового контакта: ',
     ):
-        return Contact(name=input(name_prefix), phone=input(phone_prefix), comment=input(comment_prefix))
+        name = input(name_prefix)
+        while True:
+            phone = input(phone_prefix)
+            if self.check_number(phone):
+                break
+            print('Введен телефон неверного формата. Разрешаются символы: [0-9](). +-')
+        return Contact(name=name, phone=phone, comment=input(comment_prefix))
 
     def search(self) -> list[Contact]:
         """Функция-обертка для меню 'Поиск контакта'"""
@@ -43,7 +62,7 @@ class Interface:
         for key, value in self.search_menu.items():
             print(f'{key: >2}. {value}')
 
-        if (choice := input('Введите номер меню: ')) not in ['1', '2', '3', '4']:
+        if (choice := input('Введите номер меню: ')) not in self.search_menu.keys():
             print('\nВы указали неверный пункт меню поиска. Повторите ввод\n')
             self.search()
         else:
@@ -65,7 +84,7 @@ class Interface:
                 self.phone_book.print_contacts(message='Список найденных контактов', contact_list=found_contacts)
                 return found_contacts
             else:
-                print('\nСреди контактов нет контакта по вашим данным')
+                print('\nСреди контактов нет контакта по вашим данным\n')
                 return []
 
     def editing(self) -> None:
@@ -94,9 +113,9 @@ class Interface:
                 self.phone_book.edit_contact(
                     old_contact=contacts_for_editing[0],
                     new_contact=self.input_contact_data(
-                        name_prefix='Введите новое ФИО контакта: ',
-                        phone_prefix='Введите новый телефон контакта: ',
-                        comment_prefix='Введите новый комментарий контакта: ',
+                        'Введите новое ФИО контакта (оставьте пустым, если изменения не требуются): ',
+                        'Введите новый телефон контакта (оставьте пустым, если изменения не требуются): ',
+                        'Введите новый комментарий контакта (оставьте пустым, если изменения не требуются): ',
                     ),
                 )
                 print('Контакт был отредактирован')
@@ -107,7 +126,7 @@ class Interface:
 
         contacts_for_deleting = self.search()
         if not contacts_for_deleting:
-            print('Дл указанных данных не было найдено контактов')
+            print('Для указанных данных не было найдено контактов')
         else:
             if len(contacts_for_deleting) > 1:
                 print('Было найдено больше одного контакта по вашим данным. Хотите удалить все? (y/n)')
@@ -126,11 +145,11 @@ class Interface:
         """Функция-обертка для меню, где необходимо получить ответ 'y' или 'n'"""
 
         answer = input()
-        if answer not in ['y', 'n']:
+        if answer not in ['y', 'yes', 'no', '', 'n']:
             print('Вы указали неверный ответ. Повторите ввод (y/n)')
             self.yes_no_answer()
         else:
-            return 1 if answer == 'y' else 0
+            return 1 if answer in ['y', 'yes', '', 'да', 'д'] else 0
 
     def run_menu(self):
         """Главная функция запуска консольного меню"""
@@ -140,7 +159,7 @@ class Interface:
             print(f'{key: >2}. {value}')
 
         if (choice := input('Введите номер меню: ')) != '0':
-            if choice not in ['1', '2', '3', '4', '5', '6', '7']:
+            if choice not in self.menu_items.keys():
                 print('Вы указали неверный пункт меню поиска. Повторите ввод', end='\n\n')
             else:
                 # печать контактов

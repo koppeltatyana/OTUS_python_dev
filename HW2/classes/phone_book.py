@@ -1,35 +1,33 @@
 import json
 import os
 
-from HW2 import Contact
+from .contact import Contact
 
 
 class PhoneBook:
     """Класс для хранения аттрибутов и методов телефонной книги"""
 
-    def __init__(self, file_name: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'phone_book.json')):
-        self.file_name = file_name
+    def __init__(self, file_name: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../phone_book.json')):
+        self._file_name = file_name
         self.contact_list = []
         self.saved_file = True
         self.load_contacts()
 
+    def get_file_name(self):
+        """Геттер-метод для получения защищенного аттрибута _file_name"""
+        return self._file_name
+
     def load_contacts(self):
         """Загрузка контактов из файла"""
-        try:
-            with open(self.file_name, 'r', encoding='utf-8') as file:
+        file_name = self.get_file_name()
+        if os.path.exists(file_name):
+            with open(file_name, 'r', encoding='utf-8') as file:
                 contacts_data = json.load(file)
                 self.contact_list = [Contact.from_dict(data) for data in contacts_data]
-        except FileNotFoundError:
-            with open(file=self.file_name, mode='w', encoding='utf-8') as file:
-                json.dump([], file, ensure_ascii=False, indent=4)
-            self.contact_list = []  # Если файл не найден, создаем пустой список
-        except json.JSONDecodeError:
-            print("Ошибка при чтении файла. Файл может быть поврежден")
-            self.contact_list = []
 
     def save_contacts(self):
         """Сохранение контактов в файл в формате JSON"""
-        with open(self.file_name, 'w', encoding='utf-8') as file:
+        with open(self.get_file_name(), 'w', encoding='utf-8') as file:
             json.dump([contact.to_dict() for contact in self.contact_list], file, ensure_ascii=False, indent=4)
         self.saved_file = True
 
@@ -78,6 +76,9 @@ class PhoneBook:
         for i in range(len(self.contact_list)):
             if self.contact_list[i] == old_contact:
                 new_contact.id_ = old_contact.id_
+                new_contact.name = old_contact.name if not new_contact.name else new_contact.name
+                new_contact.phone = old_contact.phone if not new_contact.phone else new_contact.phone
+                new_contact.comment = old_contact.comment if not new_contact.comment else new_contact.comment
                 self.contact_list[i] = new_contact
         self.saved_file = False
 

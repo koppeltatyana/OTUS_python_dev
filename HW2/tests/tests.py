@@ -1,4 +1,4 @@
-from HW2 import Contact, PhoneBook
+from HW2.classes import Contact, PhoneBook
 
 
 def is_contact_in_phone_book(contact: Contact, contact_list: list[Contact]) -> bool:
