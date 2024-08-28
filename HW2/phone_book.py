@@ -103,6 +103,12 @@ class PhoneBook:
                 found_contacts.append(contact)
         return found_contacts
 
+    def sort_contacts(self) -> None:
+        """Сортировка контактов по полю 'Имя'"""
+
+        self.contact_list = sorted(self.contact_list, key=lambda x: x.name)
+        self.saved_file = False
+
     def print_contacts(self, message: str = 'Список контактов', contact_list: list[Contact] | None = None) -> None:
         """
         Печать контактов в консоль
@@ -123,8 +129,8 @@ class PhoneBook:
 
     @staticmethod
     def print_star_str(end: bool = False):
-        print('*' * 70, end='\n\n' if end else '\n')
+        print('*' * 80, end='\n\n' if end else '\n')
 
     @staticmethod
-    def print_empty_str(end: bool = False):
-        print('*' * 70, end='\n\n' if end else '\n')
+    def print_empty_str():
+        print()
