@@ -1,5 +1,3 @@
-import re
-
 from .contact import Contact
 from .phone_book import PhoneBook
 
@@ -32,14 +30,26 @@ class Interface:
         print('Телефонный справочник начал свою работу\n')
 
     @staticmethod
-    def check_number(number: str) -> bool:
-        """
-        Проверить телефон на валидность
+    def print_star_str(end: bool = False):
+        print('*' * 80, end='\n\n' if end else '\n')
 
-        :param number: Проверяемый номер телефона
-        :return: Булево значение
+    def print_contacts(self, message: str = 'Список контактов', contact_list: list[Contact] | None = None) -> None:
         """
-        return bool(re.match(r'^[\d\s\.\-() ]+$', number))
+        Печать контактов в консоль
+
+        :param message: Сообщение перед печатью контактов
+        :param contact_list: Список контактов. Если список контактов не передан, то будет распечатан полный список
+        контактов
+        """
+        contacts = contact_list if contact_list else self.phone_book.contact_list
+        if not contacts:
+            print('\nСписок контактов пуст\n')
+        else:
+            print(f'\n{message}:')
+            self.print_star_str()
+            for contact in contacts:
+                print(contact)
+            self.print_star_str(end=True)
 
     def input_contact_data(
         self,
@@ -50,7 +60,7 @@ class Interface:
         name = input(name_prefix)
         while True:
             phone = input(phone_prefix)
-            if self.check_number(phone):
+            if not phone or self.phone_book.check_number(phone):
                 break
             print('Введен телефон неверного формата. Разрешаются символы: [0-9](). +-')
         return Contact(name=name, phone=phone, comment=input(comment_prefix))
@@ -81,7 +91,7 @@ class Interface:
             else:
                 found_contacts = self.phone_book.find_contact(request_string=input('Введите поисковую строку: '))
             if found_contacts:
-                self.phone_book.print_contacts(message='Список найденных контактов', contact_list=found_contacts)
+                self.print_contacts(message='Список найденных контактов', contact_list=found_contacts)
                 return found_contacts
             else:
                 print('\nСреди контактов нет контакта по вашим данным\n')
@@ -93,7 +103,7 @@ class Interface:
         contacts_for_editing = self.search()
         if not contacts_for_editing:
             print('Для указанных данных не было найдено контактов')
-            self.phone_book.print_star_str(end=True)
+            self.print_star_str(end=True)
         else:
             if len(contacts_for_editing) > 1:
                 print('\nБыло найдено больше одного контакта. Хотите отредактировать их? (y/n)')
@@ -105,10 +115,10 @@ class Interface:
                             old_contact=contact, new_contact=self.input_contact_data()
                         )
                     print('Контакты были отредактированы')
-                    self.phone_book.print_star_str(end=True)
+                    self.print_star_str(end=True)
                 else:
                     print('Выход в главное меню')
-                    self.phone_book.print_star_str(end=True)
+                    self.print_star_str(end=True)
             else:
                 self.phone_book.edit_contact(
                     old_contact=contacts_for_editing[0],
@@ -119,7 +129,7 @@ class Interface:
                     ),
                 )
                 print('Контакт был отредактирован')
-                self.phone_book.print_star_str(end=True)
+                self.print_star_str(end=True)
 
     def removing(self):
         """Функция-обертка для меню 'Удаление контакта'"""
@@ -164,58 +174,58 @@ class Interface:
             else:
                 # печать контактов
                 if choice == '1':
-                    self.phone_book.print_contacts()
+                    self.print_contacts()
 
                 # добавление контактов
                 elif choice == '2':
                     print(f'\n{self.menu_items[choice]}')
-                    self.phone_book.print_star_str()
+                    self.print_star_str()
                     self.phone_book.add_contact(contact=self.input_contact_data())
                     print('Контакт был добавлен в список контактов')
-                    self.phone_book.print_star_str(end=True)
+                    self.print_star_str(end=True)
 
                 # поиск контактов
                 elif choice == '3':
                     print(f'\n{self.menu_items[choice]}')
-                    self.phone_book.print_star_str()
+                    self.print_star_str()
                     self.search()
 
                 # редактирование контактов
                 elif choice == '4':
                     print(f'\n{self.menu_items[choice]}')
-                    self.phone_book.print_star_str()
+                    self.print_star_str()
                     print('Перед редактированием необходимо найти контакт в списке контактов')
                     self.editing()
 
                 # удаление контактов
                 elif choice == '5':
                     print(f'\n{self.menu_items[choice]}')
-                    self.phone_book.print_star_str()
+                    self.print_star_str()
                     print('Перед удалением необходимо найти контакт в списке контактов')
                     self.removing()
 
                 # сортировка контактов
                 elif choice == '6':
                     print(f'\n{self.menu_items[choice]}')
-                    self.phone_book.print_star_str()
+                    self.print_star_str()
                     self.phone_book.sort_contacts()
                     print('Контакты были успешно отсортированы по полю "ФИО"')
-                    self.phone_book.print_star_str(end=True)
+                    self.print_star_str(end=True)
 
                 # оптимизация id контактов
                 elif choice == '7':
-                    self.phone_book.print_star_str()
+                    self.print_star_str()
                     self.phone_book.optimize_ids()
                     print('Id контактов были успешно оптимизированы')
-                    self.phone_book.print_star_str(end=True)
+                    self.print_star_str(end=True)
 
                 # сохранение файла
                 elif choice == '8':
-                    self.phone_book.print_star_str()
+                    self.print_star_str()
                     self.phone_book.save_contacts()
                     self.phone_book.saved_file = True
                     print('Файл был успешно сохранен')
-                    self.phone_book.print_star_str(end=True)
+                    self.print_star_str(end=True)
 
             self.run_menu()  # рекурсивный запуск метода run_menu во избежание цикла 'while True:'
         else:

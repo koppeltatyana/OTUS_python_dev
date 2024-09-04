@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 from .contact import Contact
 
@@ -110,28 +111,12 @@ class PhoneBook:
         self.contact_list = sorted(self.contact_list, key=lambda x: x.name)
         self.saved_file = False
 
-    def print_contacts(self, message: str = 'Список контактов', contact_list: list[Contact] | None = None) -> None:
-        """
-        Печать контактов в консоль
-
-        :param message: Сообщение перед печатью контактов
-        :param contact_list: Список контактов. Если список контактов не передан, то будет распечатан полный список
-        контактов
-        """
-        contacts = contact_list if contact_list else self.contact_list
-        if not contacts:
-            print('\nСписок контактов пуст\n')
-        else:
-            print(f'\n{message}:')
-            self.print_star_str()
-            for contact in contacts:
-                print(contact)
-            self.print_star_str(end=True)
-
     @staticmethod
-    def print_star_str(end: bool = False):
-        print('*' * 80, end='\n\n' if end else '\n')
+    def check_number(number: str) -> bool:
+        """
+        Проверить телефон на валидность
 
-    @staticmethod
-    def print_empty_str():
-        print()
+        :param number: Проверяемый номер телефона
+        :return: Булево значение
+        """
+        return bool(re.match(r'^[\d\s\.\-() ]+$', number))
