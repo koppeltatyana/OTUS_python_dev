@@ -1,4 +1,4 @@
-from HW2.classes import Contact, PhoneBook
+from ..classes import Contact, PhoneBook
 
 
 def is_contact_in_phone_book(contact: Contact, contact_list: list[Contact]) -> bool:
@@ -56,7 +56,7 @@ class TestsWithoutSaving:
         assert is_contact_in_phone_book(new_contact_data, phone_book.get_contact_list()), \
             f'Данные контакта {add_contact} не были отредактированы'
 
-    def test_id_optimize(self, add_contact_without_deleting, phone_book: PhoneBook):
+    def test_id_optimize(self, add_contacts_for_test, add_contact_without_deleting, phone_book: PhoneBook):
         phone_book.delete_contact(add_contact_without_deleting)
         phone_book.optimize_ids()
         contact_ids_list = [x.id_ for x in phone_book.get_contact_list()]
@@ -105,7 +105,7 @@ class TestsWithSaving:
             phone_book.save_contacts()
             phone_book.load_contacts()
 
-    def test_id_optimize_saving(self, add_contact_with_saving_without_deleting, phone_book: PhoneBook):
+    def test_id_optimize_saving(self, add_contacts_for_test, add_contact_with_saving_without_deleting, phone_book):
         phone_book.delete_contact(add_contact_with_saving_without_deleting)
         phone_book.optimize_ids()
         phone_book.save_contacts()

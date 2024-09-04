@@ -1,4 +1,4 @@
-from HW2 import PhoneBook, Interface
+from classes import PhoneBook, Interface
 
 
 if __name__ == '__main__':

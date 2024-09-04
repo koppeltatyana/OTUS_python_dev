@@ -1,9 +1,11 @@
+import json
+import os.path
 from random import randint
 
 import pytest
 from faker import Faker
 
-from HW2 import Contact, PhoneBook
+from ..classes import Contact, PhoneBook
 
 
 @pytest.fixture(scope='session')
@@ -12,8 +14,17 @@ def faker() -> Faker:
 
 
 @pytest.fixture(scope='session')
-def phone_book() -> PhoneBook:
-    return PhoneBook(file_name='phone_book_for_test.json')
+def file_for_tests():
+    file_name = './phone_book_for_test.json'
+    with open(file_name, 'w', encoding='utf-8') as file:
+        json.dump([], file, ensure_ascii=False, indent=4)
+    yield file_name
+    if os.path.exists(file_name):
+        os.remove(file_name)
+
+@pytest.fixture(scope='session')
+def phone_book(file_for_tests) -> PhoneBook:
+    return PhoneBook(file_name=file_for_tests)
 
 @pytest.fixture
 def new_contact_data(faker: Faker, phone_book: PhoneBook) -> dict:
